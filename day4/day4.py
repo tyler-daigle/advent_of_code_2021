@@ -3,8 +3,10 @@ BOARD_HEIGHT = 5
 
 class Card:
     
-    def __init__(self):
+    def __init__(self, id):
         self.rows = []        
+        self.id = id
+        self.won = False
 
     def __str__(self):
         s = ""
@@ -43,6 +45,9 @@ class Card:
         return self.rows[row][col]["marked"]        
 
     def check_for_winner(self):
+        if self.won == True:
+            return False #already won?
+        
         row_count = [x * 0 for x in range(0, BOARD_HEIGHT)]
         col_count = [x * 0 for x in range(0, BOARD_WIDTH)]
 
@@ -57,12 +62,16 @@ class Card:
                     col_count[curr_col] += 1
                 curr_col += 1
             curr_row += 1
-               
-        return BOARD_HEIGHT in row_count or BOARD_WIDTH in col_count
+        
+
+        if BOARD_HEIGHT in row_count or BOARD_WIDTH in col_count:
+            self.won = True
+            return True
+        else:
+            return False
         
     def calc_sum_unmarked(self):
         sum = 0
-
         for row in self.rows:
             for col in row:
                 if col["marked"] == False:
@@ -72,18 +81,19 @@ class Card:
 def load_data(filename, height = BOARD_HEIGHT):
     nums = None
     cards = []
-    
+    card_id = 0
     with open(filename) as data_file:
         # first line is the number list
         nums = [int(n) for n in data_file.readline().strip().split(",")]
         data_file.readline() # remove first blank line
-        card = Card()
+        card = Card(card_id)
 
         for line in data_file:
             if line.strip() == "":
                 # blank line add card to cards[] and start new card
                 cards.append(card)
-                card = Card()                
+                card_id += 1
+                card = Card(card_id)                
                 continue
     
             card.add_row(line.split())
@@ -91,45 +101,27 @@ def load_data(filename, height = BOARD_HEIGHT):
         cards.append(card)
     return [nums, cards]
 
-nums, cards = load_data("test.txt")
+nums, cards = load_data("data.txt")
 
 winner = False
 card_num = 0
 last_num = 0
+winner_list = []
 for num in nums:    
-    if winner:
-        break
-    # play the number
     for card in cards:
         card.find_and_mark(num)
 
     # then check for winner
-    card_num = 0
+    
     for card in cards:        
         if card.check_for_winner():
-            winner = True
-        else:
-            card_num += 1
-
+            # keep a list of the winners - the card number and the last number they won with                        
+            winner_list.append([card.id, num, card.calc_sum_unmarked()])            
+    
     last_num = num
-        
-print(card_num, "Wins with", last_num)
-print(cards[card_num].calc_sum_unmarked() * last_num)
 
-
-#     print(card)
-
-
-# curr_card = cards[0]
-# curr_card.mark(0,0)
-# curr_card.mark(1,0)
-# curr_card.mark(2,0)
-# curr_card.mark(3,0)
-# curr_card.mark(4,0)
-# result = curr_card.check_for_winner()
-# print(curr_card.check_if_marked(0,0))
-# curr_card.find_and_mark(23)
-# print(curr_card.check_if_marked(0,0))
-# print(result)
+print("First Number: Board that Won\nSecond Number: The last number played that caused the board to win\nThird Number: Sum of all the unmarked squares on the board")
+print("First winner: ", winner_list[0]) # first winner
+print("Last Winner: ", winner_list[-1]) # last winner
 
     
