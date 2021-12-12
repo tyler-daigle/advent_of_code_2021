@@ -1,0 +1,22 @@
+#grid {
+  display: flex;
+  gap: 1rem;
+}
+
+table {
+  border-collapse: collapse;
+}
+.grid-square {
+  height: 10px;
+  width: 10px;
+  background-color: black;
+  color: white;
+}
+
+.segment-on {
+  background-color: greenyellow;
+}
+
+.segment-off {
+  background-color: black;
+}

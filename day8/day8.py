@@ -1,3 +1,11 @@
+def build_digit(digit_data):
+    # digit_data = {8: "abcdef", 4: "defg", etc...}
+     
+    segments = {0:"", 1:"", 2:"",3:"",4:"",5:"",6:"",7:""}
+
+    # gcbe = 4
+    # fdgacbe = 8
+
 def load_data(filename):
     with open(filename) as data_file:        
         data = []
