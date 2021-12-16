@@ -16,9 +16,12 @@ class Octopus:
         self.neighbors = neighbors
 
     def life_cycle(self):
-        if self.power_level == 9:
-            self.is_flashing = True
+        if self.is_flashing:
+            return
+
+        if self.power_level > 9:
             self.power_level = 0
+            self.is_flashing = True
         else:
             self.power_level += 1
 
@@ -86,8 +89,53 @@ def create_octopuses(data):
     return octopi
 
 
+def print_grid(octopi, rows, cols):
+    for row in range(0, rows):
+        s = ""
+        for col in range(0, cols):
+            s += str(octopi[(row, col)].power_level)
+        print(s)
+
+
 data = load_data("test.txt")
-print(data[0][0])
 
 octo = create_octopuses(data)
-octo[(1, 1)].display()
+num_rows = 5
+num_cols = 5
+print_grid(octo, num_rows, num_cols)
+for i in range(0, 2):
+    for row in range(0, num_rows):
+        print("Life Cycle {0}".format(i))
+        for col in range(0, num_cols):
+            octo[(row, col)].life_cycle()
+
+# while something is flashing
+flashers = set()
+for pos, oct in octo.items():
+    if oct.is_flashing:
+        print("{0} is flashing".format(pos))
+        flashers.add(pos)
+
+# need to remove duplicates from flashers
+
+for f in flashers:
+    print("Flaher: ", f)
+
+for flashing in flashers:
+    # get all the neighbors of the flashing octo and execute a lifecyle on them
+
+    # TODO: the same neighbor is being added multiple times
+    neighbors = octo[flashing].neighbors
+
+    for n in neighbors:
+        octo[n].life_cycle()
+        # stop the octo from flashing
+        octo[n].is_flashing = False
+
+print_grid(octo, num_rows, num_cols)
+
+# 45654
+# 51115
+# 61116
+# 51115
+# 45654
